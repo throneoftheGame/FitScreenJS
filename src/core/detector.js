@@ -27,7 +27,15 @@ export function detectScreenSize() {
  * @returns {Object} 设计尺寸 {width, height}
  */
 export function determineDesignSize(options, container, content) {
-  const { designWidth, designHeight, aspectRatio, autoDetect } = options
+  const {
+    designWidth,
+    designHeight,
+    aspectRatio,
+    autoDetect,
+    // 从options中获取之前保存的检测到的尺寸
+    detectedWidth,
+    detectedHeight,
+  } = options
 
   // 如果直接指定了设计尺寸，优先使用
   if (
@@ -67,6 +75,14 @@ export function determineDesignSize(options, container, content) {
         width: containerSize.width,
         height: Math.round(containerSize.width / aspectRatio),
       }
+    }
+  }
+
+  // 如果有之前检测到的尺寸，直接使用
+  if (detectedWidth && detectedHeight && detectedWidth > 0 && detectedHeight > 0) {
+    return {
+      width: detectedWidth,
+      height: detectedHeight,
     }
   }
 

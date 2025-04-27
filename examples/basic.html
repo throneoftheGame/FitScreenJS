@@ -117,6 +117,12 @@
         <button id="btn-fullscreen">全屏填充</button>
       </div>
       <div>
+        <strong>尺寸检测方式：</strong>
+        <button id="btn-auto-detect">自动检测</button>
+        <button id="btn-explicit-size">指定尺寸</button>
+        <button id="btn-aspect-ratio">使用宽高比</button>
+      </div>
+      <div>
         <strong>当前信息：</strong>
         <div id="info"></div>
       </div>
@@ -139,33 +145,100 @@
       // 在实际使用时，可以通过正常的npm方式引入
       import FitScreenJS from '../dist/fitscreen.esm.js'
 
-      // 创建FitScreenJS实例
-      const screenFitter = new FitScreenJS({
-        // 可以不指定设计尺寸，会自动检测
-        // designWidth: 2560,
-        // designHeight: 1440,
+      let screenFitter
 
-        // 也可以指定宽高比
-        aspectRatio: '16:9',
+      // 初始化FitScreenJS，默认自动检测
+      function initWithAutoDetect() {
+        if (screenFitter) {
+          screenFitter.destroy()
+        }
 
-        // 初始模式为等比缩放
-        mode: 'proportional',
+        screenFitter = new FitScreenJS({
+          // 不指定设计尺寸，使用自动检测
+          autoDetect: true,
 
-        // 背景颜色
-        backgroundColor: '#000',
+          // 初始模式为等比缩放
+          mode: 'proportional',
 
-        // 事件回调
-        onResize: updateInfo,
-        onModeChange: (mode) => {
-          console.log('模式已切换为:', mode)
-          updateInfo()
-        },
-      })
+          // 背景颜色
+          backgroundColor: '#000',
 
-      // 应用到容器
-      screenFitter.applyTo('#dashboard-container')
+          // 事件回调
+          onResize: updateInfo,
+          onModeChange: (mode) => {
+            console.log('模式已切换为:', mode)
+            updateInfo()
+          },
+        })
 
-      // 绑定按钮事件
+        // 应用到容器
+        screenFitter.applyTo('#dashboard-container')
+        updateInfo()
+      }
+
+      // 初始化FitScreenJS，指定尺寸
+      function initWithExplicitSize() {
+        if (screenFitter) {
+          screenFitter.destroy()
+        }
+
+        screenFitter = new FitScreenJS({
+          // 指定设计尺寸
+          designWidth: 2560,
+          designHeight: 1440,
+
+          // 初始模式为等比缩放
+          mode: 'proportional',
+
+          // 背景颜色
+          backgroundColor: '#000',
+
+          // 事件回调
+          onResize: updateInfo,
+          onModeChange: (mode) => {
+            console.log('模式已切换为:', mode)
+            updateInfo()
+          },
+        })
+
+        // 应用到容器
+        screenFitter.applyTo('#dashboard-container')
+        updateInfo()
+      }
+
+      // 初始化FitScreenJS，使用宽高比
+      function initWithAspectRatio() {
+        if (screenFitter) {
+          screenFitter.destroy()
+        }
+
+        screenFitter = new FitScreenJS({
+          // 使用宽高比
+          aspectRatio: '16:9',
+
+          // 初始模式为等比缩放
+          mode: 'proportional',
+
+          // 背景颜色
+          backgroundColor: '#000',
+
+          // 事件回调
+          onResize: updateInfo,
+          onModeChange: (mode) => {
+            console.log('模式已切换为:', mode)
+            updateInfo()
+          },
+        })
+
+        // 应用到容器
+        screenFitter.applyTo('#dashboard-container')
+        updateInfo()
+      }
+
+      // 默认使用自动检测初始化
+      initWithAutoDetect()
+
+      // 绑定按钮事件 - 缩放模式
       document.getElementById('btn-proportional').addEventListener('click', () => {
         screenFitter.setMode('proportional')
       })
@@ -174,22 +247,28 @@
         screenFitter.setMode('fullscreen')
       })
 
+      // 绑定按钮事件 - 检测方式
+      document.getElementById('btn-auto-detect').addEventListener('click', initWithAutoDetect)
+      document.getElementById('btn-explicit-size').addEventListener('click', initWithExplicitSize)
+      document.getElementById('btn-aspect-ratio').addEventListener('click', initWithAspectRatio)
+
       // 更新信息面板
       function updateInfo() {
         const container = document.getElementById('dashboard-container')
         const mode = screenFitter.getMode()
         const scale = screenFitter.getScale()
 
+        // 获取设计尺寸
+        const designSize = screenFitter.scaler.designSize
+
         const info = document.getElementById('info')
         info.innerHTML = `
-        模式: ${mode === 'proportional' ? '等比缩放' : '全屏填充'}<br>
-        缩放比例: ${scale.toFixed(2)}<br>
-        视窗尺寸: ${container.offsetWidth} x ${container.offsetHeight}
-      `
+          模式: ${mode === 'proportional' ? '等比缩放' : '全屏填充'}<br>
+          缩放比例: ${scale.toFixed(2)}<br>
+          视窗尺寸: ${container.offsetWidth} x ${container.offsetHeight}<br>
+          设计尺寸: ${designSize.width} x ${designSize.height}
+        `
       }
-
-      // 初始化时更新一次信息
-      updateInfo()
     </script>
   </body>
 </html>

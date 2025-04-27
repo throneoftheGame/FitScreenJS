@@ -74,12 +74,21 @@ export function applyProportionalMode(container, content, scale, options) {
  * @param {Object} options - 配置选项
  */
 export function applyFullscreenMode(container, content, scale, options) {
-  const { scaleContent = true, backgroundColor = null } = options
+  const {
+    scaleContent = true,
+    backgroundColor = null,
+    scaleX = null,
+    scaleY = null,
+    useTransform = true, // 是否使用transform进行缩放
+    preserveChildStyles = true, // 是否保留子元素原始样式
+  } = options
 
   // 设置容器样式
   if (container) {
     container.style.position = 'relative'
     container.style.overflow = 'hidden'
+    container.style.width = '100%'
+    container.style.height = '100%'
 
     if (backgroundColor) {
       container.style.backgroundColor = backgroundColor
@@ -88,14 +97,42 @@ export function applyFullscreenMode(container, content, scale, options) {
 
   // 设置内容样式
   if (content && scaleContent) {
-    content.style.position = 'absolute'
-    content.style.transformOrigin = 'top left'
-    content.style.transform = `scale(${scale})`
+    const originalWidth = content.offsetWidth
+    const originalHeight = content.offsetHeight
+    const containerWidth = container.offsetWidth
+    const containerHeight = container.offsetHeight
 
-    // 居中内容
-    content.style.left = '50%'
-    content.style.top = '50%'
-    content.style.transform = `translate(-50%, -50%) scale(${scale})`
-    content.style.transformOrigin = 'center center'
+    // 设置基础样式
+    content.style.position = 'absolute'
+    content.style.top = '0'
+    content.style.left = '0'
+    content.style.margin = '0'
+    content.style.padding = '0'
+
+    // 使用transform进行非等比缩放（支持X和Y方向不同的缩放比例）
+    if (useTransform && scaleX !== null && scaleY !== null) {
+      content.style.width = `${originalWidth}px`
+      content.style.height = `${originalHeight}px`
+      content.style.transformOrigin = 'top left'
+      content.style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`
+    }
+    // 使用百分比宽高进行填充
+    else {
+      content.style.width = '100%'
+      content.style.height = '100%'
+      content.style.transform = 'none'
+    }
+
+    // 处理内容元素中的子元素
+    if (!preserveChildStyles && content.children.length > 0) {
+      const firstChild = content.children[0]
+      firstChild.style.width = '100%'
+      firstChild.style.height = '100%'
+
+      // 修改背景图片的大小以适应新尺寸
+      if (firstChild.style.backgroundImage) {
+        firstChild.style.backgroundSize = 'cover'
+      }
+    }
   }
 }

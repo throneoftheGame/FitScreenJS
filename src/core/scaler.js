@@ -1,4 +1,4 @@
-import { calculateScale } from '../utils/helpers'
+import { calculateScale, calculateNonProportionalScale } from '../utils/helpers'
 import { applyProportionalMode, applyFullscreenMode, MODES } from './modes'
 
 /**
@@ -15,6 +15,8 @@ export class Scaler {
     this.content = null
     this.designSize = { width: 0, height: 0 }
     this.currentScale = 1
+    this.currentScaleX = 1 // 水平方向缩放比例
+    this.currentScaleY = 1 // 垂直方向缩放比例
     this.currentMode = options.mode || MODES.PROPORTIONAL
     this.isInitialized = false
   }
@@ -93,7 +95,19 @@ export class Scaler {
     const containerWidth = this.container.offsetWidth
     const containerHeight = this.container.offsetHeight
 
-    // 计算缩放比例，fullscreen模式下使用cover=true
+    // 全屏模式下计算非等比缩放比例
+    if (this.currentMode === MODES.FULLSCREEN) {
+      const nonProportionalScale = calculateNonProportionalScale(
+        containerWidth,
+        containerHeight,
+        this.designSize.width,
+        this.designSize.height
+      )
+      this.currentScaleX = nonProportionalScale.scaleX
+      this.currentScaleY = nonProportionalScale.scaleY
+    }
+
+    // 计算等比缩放比例，fullscreen模式下使用cover=true
     return calculateScale(
       containerWidth,
       containerHeight,
@@ -112,10 +126,16 @@ export class Scaler {
     // 计算缩放比例
     this.currentScale = this.calculateCurrentScale()
 
-    // 根据当前模式应用样式
+    // 全屏填充模式
     if (this.currentMode === MODES.FULLSCREEN) {
-      applyFullscreenMode(this.container, this.content, this.currentScale, this.options)
-    } else {
+      applyFullscreenMode(this.container, this.content, this.currentScale, {
+        ...this.options,
+        scaleX: this.currentScaleX,
+        scaleY: this.currentScaleY,
+      })
+    }
+    // 等比缩放模式
+    else {
       applyProportionalMode(this.container, this.content, this.currentScale, this.options)
     }
 
@@ -124,7 +144,10 @@ export class Scaler {
       this.options.onResize(
         this.container.offsetWidth,
         this.container.offsetHeight,
-        this.currentScale
+        this.currentScale,
+        this.currentMode === MODES.FULLSCREEN
+          ? { x: this.currentScaleX, y: this.currentScaleY }
+          : null
       )
     }
   }

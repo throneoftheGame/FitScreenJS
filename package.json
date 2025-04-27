@@ -1,6 +1,6 @@
 {
   "name": "@miniefull/fitscreenjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "一个用于大屏等比缩放和全屏自适应的JavaScript库",
   "main": "dist/fitscreen.js",
   "module": "dist/fitscreen.esm.js",

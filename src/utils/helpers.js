@@ -54,6 +54,26 @@ export function calculateScale(
 }
 
 /**
+ * 计算非等比缩放的缩放比例（分别计算宽度和高度的缩放率）
+ * @param {number} containerWidth - 容器宽度
+ * @param {number} containerHeight - 容器高度
+ * @param {number} contentWidth - 内容宽度
+ * @param {number} contentHeight - 内容高度
+ * @returns {Object} 包含X和Y方向缩放比例的对象
+ */
+export function calculateNonProportionalScale(
+  containerWidth,
+  containerHeight,
+  contentWidth,
+  contentHeight
+) {
+  return {
+    scaleX: containerWidth / contentWidth,
+    scaleY: containerHeight / contentHeight,
+  }
+}
+
+/**
  * 防抖函数
  * @param {Function} func - 要执行的函数
  * @param {number} wait - 等待时间（毫秒）
