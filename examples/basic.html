@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitScreenJS 基本示例</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+        height: 100vh;
+        background-color: #f0f0f0;
+      }
+
+      /* 控制面板样式 */
+      .controls {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 5px;
+        padding: 10px;
+        color: white;
+      }
+
+      .controls button {
+        background: #4caf50;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        margin: 5px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      .controls button:hover {
+        background: #45a049;
+      }
+
+      /* 大屏容器样式 */
+      #dashboard-container {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* 模拟大屏内容 */
+      .dashboard {
+        width: 2560px; /* 模拟2K设计稿宽度 */
+        height: 1440px; /* 模拟2K设计稿高度 */
+        background: url('https://picsum.photos/2560/1440') no-repeat center center;
+        background-size: cover;
+        position: relative;
+      }
+
+      .dashboard-item {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .item1 {
+        top: 50px;
+        left: 50px;
+        width: 400px;
+        height: 300px;
+      }
+
+      .item2 {
+        top: 50px;
+        right: 50px;
+        width: 400px;
+        height: 300px;
+      }
+
+      .item3 {
+        bottom: 50px;
+        left: 50px;
+        width: 400px;
+        height: 300px;
+      }
+
+      .item4 {
+        bottom: 50px;
+        right: 50px;
+        width: 400px;
+        height: 300px;
+      }
+
+      .item5 {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 600px;
+        height: 400px;
+        background-color: rgba(0, 100, 255, 0.8);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 控制面板 -->
+    <div class="controls">
+      <div>
+        <strong>缩放模式：</strong>
+        <button id="btn-proportional">等比缩放</button>
+        <button id="btn-fullscreen">全屏填充</button>
+      </div>
+      <div>
+        <strong>当前信息：</strong>
+        <div id="info"></div>
+      </div>
+    </div>
+
+    <!-- 大屏容器 -->
+    <div id="dashboard-container">
+      <div class="dashboard">
+        <!-- 模拟大屏内容 -->
+        <div class="dashboard-item item1">左上角模块</div>
+        <div class="dashboard-item item2">右上角模块</div>
+        <div class="dashboard-item item3">左下角模块</div>
+        <div class="dashboard-item item4">右下角模块</div>
+        <div class="dashboard-item item5">中央核心模块<br />2K 大屏 (2560x1440)</div>
+      </div>
+    </div>
+
+    <!-- 引入FitScreenJS库（开发环境可以使用相对路径） -->
+    <script type="module">
+      // 在实际使用时，可以通过正常的npm方式引入
+      import FitScreenJS from '../dist/fitscreen.esm.js'
+
+      // 创建FitScreenJS实例
+      const screenFitter = new FitScreenJS({
+        // 可以不指定设计尺寸，会自动检测
+        // designWidth: 2560,
+        // designHeight: 1440,
+
+        // 也可以指定宽高比
+        aspectRatio: '16:9',
+
+        // 初始模式为等比缩放
+        mode: 'proportional',
+
+        // 背景颜色
+        backgroundColor: '#000',
+
+        // 事件回调
+        onResize: updateInfo,
+        onModeChange: (mode) => {
+          console.log('模式已切换为:', mode)
+          updateInfo()
+        },
+      })
+
+      // 应用到容器
+      screenFitter.applyTo('#dashboard-container')
+
+      // 绑定按钮事件
+      document.getElementById('btn-proportional').addEventListener('click', () => {
+        screenFitter.setMode('proportional')
+      })
+
+      document.getElementById('btn-fullscreen').addEventListener('click', () => {
+        screenFitter.setMode('fullscreen')
+      })
+
+      // 更新信息面板
+      function updateInfo() {
+        const container = document.getElementById('dashboard-container')
+        const mode = screenFitter.getMode()
+        const scale = screenFitter.getScale()
+
+        const info = document.getElementById('info')
+        info.innerHTML = `
+        模式: ${mode === 'proportional' ? '等比缩放' : '全屏填充'}<br>
+        缩放比例: ${scale.toFixed(2)}<br>
+        视窗尺寸: ${container.offsetWidth} x ${container.offsetHeight}
+      `
+      }
+
+      // 初始化时更新一次信息
+      updateInfo()
+    </script>
+  </body>
+</html>

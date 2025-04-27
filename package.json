@@ -1,0 +1,37 @@
+{
+  "name": "fitscreenjs",
+  "version": "1.0.0",
+  "description": "一个用于大屏等比缩放和全屏自适应的JavaScript库",
+  "main": "dist/fitscreen.js",
+  "module": "dist/fitscreen.esm.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "screen",
+    "fit",
+    "scale",
+    "fullscreen",
+    "responsive",
+    "visualization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "@vitest/coverage-v8": "^0.34.6",
+    "jsdom": "^22.1.0",
+    "rollup": "^2.56.3",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "vitest": "^0.34.6"
+  }
+}
