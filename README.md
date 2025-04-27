@@ -14,7 +14,7 @@
 ## 安装
 
 ```bash
-npm install fitscreenjs
+npm install @miniefull/fitscreenjs
 ```
 
 ## 基本使用
@@ -23,7 +23,7 @@ npm install fitscreenjs
 
 ```javascript
 // 引入库
-import FitScreenJS from 'fitscreenjs'
+import FitScreenJS from '@miniefull/fitscreenjs'
 
 // 创建实例
 const screenFitter = new FitScreenJS()
@@ -126,7 +126,7 @@ export default {
 
 ```javascript
 import React, { useEffect, useRef } from 'react'
-import FitScreenJS from 'fitscreenjs'
+import FitScreenJS from '@miniefull/fitscreenjs'
 
 function Dashboard() {
   const containerRef = useRef(null)
